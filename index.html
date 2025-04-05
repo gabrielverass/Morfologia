@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contador de SPZ : Morfologia</title>
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --text-dark: #ffffff;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+      transition: background-color 0.3s, color 0.3s;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 2em;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    button {
+      flex: 1;
+      padding: 30px 10px;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      min-width: 100px;
+      white-space: nowrap;
+    }
+
+    .maior {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .menor {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .normal {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 2em;
+      background-color: #333;
+      padding: 15px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .restart {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 1.2em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .restart:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .alert,
+    .final-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 1000;
+      max-width: 90%;
+      font-size: 1.2em;
+    }
+
+    .alert button,
+    .final-message button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="alert" id="orientationAlert">
+    Vire a tela do aparelho de lado para melhor otimização do contador
+    <br>
+    <button onclick="fecharAlerta()">OK</button>
+  </div>
+
+  <div class="final-message" id="mensagemFinal" style="display:none;">
+    Contagem concluída com sucesso!
+    <br><br>
+    <button onclick="fecharMensagemFinal()">OK</button>
+  </div>
+
+  <h1>Contador de SPZ : Morfologia</h1>
+
+  <div class="buttons">
+    <button class="maior" onclick="incrementar('maior')" id="btnMaior">Maior: 0</button>
+    <button class="menor" onclick="incrementar('menor')" id="btnMenor">Menor: 0</button>
+    <button class="normal" onclick="incrementar('normal')" id="btnNormal">Normal: 0</button>
+  </div>
+
+  <div class="result">
+    Total: <span id="totalCount">0</span>
+  </div>
+
+  <button class="restart" id="restartButton" onclick="reiniciar()" disabled>Reiniciar</button>
+
+  <script>
+    let maior = 0, menor = 0, normal = 0;
+    const limite = 200;
+
+    function vibrar(ms = 100) {
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    function incrementar(tipo) {
+      if ((maior + menor + normal) < limite) {
+        if (tipo === 'maior') maior++;
+        if (tipo === 'menor') menor++;
+        if (tipo === 'normal') normal++;
+        atualizarContadores();
+        vibrar();
+      }
+    }
+
+    function atualizarContadores() {
+      document.getElementById('btnMaior').textContent = `Maior: ${maior}`;
+      document.getElementById('btnMenor').textContent = `Menor: ${menor}`;
+      document.getElementById('btnNormal').textContent = `Normal: ${normal}`;
+      const total = maior + menor + normal;
+      document.getElementById('totalCount').textContent = total;
+
+      if (total >= limite) {
+        desativarBotoes();
+        document.getElementById('restartButton').disabled = false;
+        document.getElementById('mensagemFinal').style.display = 'block';
+      }
+    }
+
+    function desativarBotoes() {
+      document.querySelectorAll('.buttons button').forEach(btn => btn.disabled = true);
+    }
+
+    function reiniciar() {
+      maior = 0;
+      menor = 0;
+      normal = 0;
+      atualizarContadores();
+      document.querySelectorAll('.buttons button').forEach(btn => btn.disabled = false);
+      document.getElementById('restartButton').disabled = true;
+    }
+
+    function fecharAlerta() {
+      document.getElementById('orientationAlert').style.display = 'none';
+    }
+
+    function fecharMensagemFinal() {
+      document.getElementById('mensagemFinal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
